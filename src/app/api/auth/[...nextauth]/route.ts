@@ -51,7 +51,6 @@ const handler = NextAuth({
 export { handler as GET, handler as POST };
 
 async function refreshAccessToken(token) {
-    console.log(token)
     const formData = new URLSearchParams({ grant_type: 'refresh_token', refresh_token: token.refreshToken });
 
     try {
