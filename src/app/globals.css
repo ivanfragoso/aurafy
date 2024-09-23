@@ -26,6 +26,19 @@ body {
   }
 }
 
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#__next {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
