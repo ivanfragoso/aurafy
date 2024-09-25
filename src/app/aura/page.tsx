@@ -4,15 +4,17 @@ import chroma from "chroma-js";
 import { useEffect, useState } from "react";
 import { motion, useMotionTemplate } from "framer-motion";
 import axios from "axios";
-import AuraCard from "@/components/aura-card";
+import AuraCard from "@/components/AuraCard";
+import FloatingText from "@/components/FloatingText";
 
 export default function Aura() {
     const [type, setType] = useState('')
     const [aura, setAura] = useState('')
+    const [names, setNames] = useState([])
     const [gradientColors, setGradientColors] = useState(["", "", ""])
     const [backgroundColor, setBackgroundColor] = useState("")
 
-    const backgroundImage = useMotionTemplate`radial-gradient(150% 175% at 50% 0%, #020617 50%, ${backgroundColor})`
+    const backgroundImage = useMotionTemplate`radial-gradient(150% 175% at 50% 0%, #0a0a0a 50%, ${backgroundColor})`
     const radialBackgroundImage = useMotionTemplate`radial-gradient(circle, ${gradientColors[0]} 10%, ${gradientColors[1]} 40%, ${gradientColors[2]} 70%)`
 
     const getAura = async (type: string) => {
@@ -23,6 +25,7 @@ export default function Aura() {
 
             if (result.status === 200) {
                 setAura(result.data.aura);
+                setNames(result.data.names);
             } else {
                 console.error("Error getting aura");
             }
@@ -32,7 +35,7 @@ export default function Aura() {
     };
 
     useEffect(() => {
-        getAura(type);
+        (type) && getAura(type)
     }, [type]);
 
     useEffect(() => {
@@ -51,28 +54,28 @@ export default function Aura() {
 
     const auraCards = [
         {
-            'title': 'Based on artists',
-            'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur diam ligula, interdum eu lorem in, sollicitudin mattis risus. Nullam consequat neque vel efficitur bibendum. Ut vitae auctor lectus. Donec sit amet tincidunt augue. Aenean egestas libero eu turpis gravida, at euismod quam sollicitudin. Nam rutrum quam tortor, quis lobortis dolor consequat vel. In nec malesuada enim. Aliquam vel mollis nunc, ac pulvinar neque. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus justo lorem, scelerisque a magna id, tempus pulvinar ante.',
+            'title': 'Based on your most recently listened artists',
+            'description': 'Get your aura based on the artists you\'ve listened to most recently. This will reflect your current musical style and your personality.',
             'type': 'artists'
         },
         {
-            'title': 'Based on tracks',
-            'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur diam ligula, interdum eu lorem in, sollicitudin mattis risus. Nullam consequat neque vel efficitur bibendum. Ut vitae auctor lectus. Donec sit amet tincidunt augue. Aenean egestas libero eu turpis gravida, at euismod quam sollicitudin. Nam rutrum quam tortor, quis lobortis dolor consequat vel. In nec malesuada enim. Aliquam vel mollis nunc, ac pulvinar neque. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus justo lorem, scelerisque a magna id, tempus pulvinar ante.',
+            'title': 'Based on your most recently listened tracks',
+            'description': 'Get your aura based on the tracks you\'ve listened to most recently. This will reflect your current musical style and mood.',
             'type': 'tracks'
         }
     ];
 
     return (
-        <section className="flex justify-center gap-4 h-full items-center" style={{backgroundColor: "#020617"}}>
+        <section className="h-full" style={{backgroundColor: "#0a0a0a"}}>
             {aura ? (
-                <>
+                <div className="flex justify-center h-full items-center">
                     <motion.div
-                        className="flex justify-center items-center w-full h-full absolute"
+                        className="w-full h-full absolute"
                         style={{
                             backgroundImage: backgroundImage,  // Existing background image
                         }}
                         initial={{ opacity: 0 }}
-                        animate={{ opacity: [0.3, 1, 0.3] }}
+                        animate={{ opacity: [0.5, 1, 0.5] }}
                         transition={{ 
                             duration: 3,
                             ease: "easeInOut",
@@ -94,7 +97,7 @@ export default function Aura() {
                         }}
                         initial={{ scale: 0.5 }}
                         animate={{
-                            scale: [0.85, 1, 0.85],
+                            scale: [0.9, 1, 0.9],
                         }}   
                         transition={{
                             duration: 3,
@@ -108,15 +111,18 @@ export default function Aura() {
                     {/* Aura text inside the sphere */}
                     <span className="text-white text-lg relative z-10">{aura}</span> 
                 </>
+                </div>
             ) : (
-                auraCards.map((auraCard, index) => (
-                    <AuraCard
-                        key={index}
-                        title={auraCard.title}
-                        description={auraCard.description}
-                        btnClick={() => setType(auraCard.type)}
-                    />
-                ))
+                <div className="h-full px-4 flex gap-4 flex-col justify-center items-center md:flex-row">
+                    {auraCards.map((auraCard, index) => (
+                        <AuraCard
+                            key={index}
+                            title={auraCard.title}
+                            description={auraCard.description}
+                            btnClick={() => setType(auraCard.type)}
+                        />
+                    ))}
+                </div>
             )}
         </section>
     );
