@@ -44,7 +44,7 @@ const handler = NextAuth({
         }
     },
     pages: {
-        signIn: "/login",
+        signIn: "/",
     }
 });
 
@@ -67,7 +67,7 @@ async function refreshAccessToken(token) {
         return {
             ...token,
             accessToken: refreshedTokens.access_token,
-            accessTokenExpires: Date.now() + refreshedTokens.expires_at,
+            accessTokenExpires: Date.now() + refreshedTokens.expires_in,
             refreshToken: refreshedTokens.refresh_token ?? token.refreshToken
         };
     } catch (error) {
