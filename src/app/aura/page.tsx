@@ -6,15 +6,15 @@ import { motion, useMotionTemplate } from "framer-motion";
 import axios from "axios";
 import AuraCard from "@/components/AuraCard";
 import FloatingText from "@/components/FloatingText";
+import AuraBackground from "@/components/AuraBackground";
 
 export default function Aura() {
     const [type, setType] = useState('')
     const [aura, setAura] = useState('')
     const [names, setNames] = useState([])
-    const [gradientColors, setGradientColors] = useState(["", "", ""])
-    const [backgroundColor, setBackgroundColor] = useState("")
+    const [gradientColors, setGradientColors] = useState<string[]>([])
+    const [backgroundColor, setBackgroundColor] = useState<string[]>([])
 
-    const backgroundImage = useMotionTemplate`radial-gradient(150% 175% at 50% 0%, #0a0a0a 50%, ${backgroundColor})`
     const radialBackgroundImage = useMotionTemplate`radial-gradient(circle, ${gradientColors[0]} 10%, ${gradientColors[1]} 40%, ${gradientColors[2]} 70%)`
 
     const getAura = async (type: string) => {
@@ -35,6 +35,11 @@ export default function Aura() {
     };
 
     useEffect(() => {
+        const generatedColors = Array.from({ length: 20 }, () => chroma.random().hex());
+        setBackgroundColor(generatedColors);
+    }, []);
+
+    useEffect(() => {
         (type) && getAura(type)
     }, [type]);
 
@@ -48,7 +53,7 @@ export default function Aura() {
             ];
 
             setGradientColors(colorVariations)
-            setBackgroundColor(aura)
+            setBackgroundColor([aura])
         }
     }, [aura]);
 
@@ -67,24 +72,9 @@ export default function Aura() {
 
     return (
         <section className="h-full" style={{backgroundColor: "#0a0a0a"}}>
+            <AuraBackground colors={backgroundColor} color={aura}/>
             {aura ? (
                 <div className="flex justify-center h-full items-center">
-                    <motion.div
-                        className="w-full h-full absolute"
-                        style={{
-                            backgroundImage: backgroundImage,  // Existing background image
-                        }}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: [0.5, 1, 0.5] }}
-                        transition={{ 
-                            duration: 3,
-                            ease: "easeInOut",
-                            repeat: Infinity,
-                            repeatType: "loop",
-                        }}
-                    >
-                    </motion.div>
-
                     {/* Glowing sphere overlay */}
                     <motion.div
                         className="absolute z-10"
@@ -110,7 +100,16 @@ export default function Aura() {
 
                     {/* Aura text inside the sphere */}
                     <span className="text-white text-lg relative z-10">{aura}</span> 
-                </>
+
+                    {/*
+                    {names.map((name, index) => {
+                        const position = {
+                        left: Math.random() * (100 - 10),
+                        top: Math.random() * (100 - 10),
+                        };
+                        return <FloatingText key={index} text={name} position={position} />;
+                    })}
+                    */}
                 </div>
             ) : (
                 <div className="h-full px-4 flex gap-4 flex-col justify-center items-center md:flex-row">
