@@ -19,7 +19,7 @@ export default function AuraCard({ title, description, btnClick }: AuraCardProps
 
     return (
       <MotionCard
-        className={cn("w-full md:w-[380px] cursor-pointer")}
+        className={cn("w-full md:w-[380px] cursor-pointer z-10")}
         whileHover={{
           scale: 1.05,
           transition: { duration: .2 },
