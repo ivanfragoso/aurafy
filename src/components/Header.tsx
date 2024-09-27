@@ -12,15 +12,12 @@ export default function Header() {
             <header className="container fixed left-0 right-0 mx-auto flex justify-between items-center bg-transparent p-4 z-20">
                 <span className="text-2xl font-bold">aurafy</span>
 
-                { session ? (
+                { session && (
                     <>
                         {session.user?.name}
                         <Button variant="secondary" onClick={() => signOut()}>Logout</Button>
                     </>
-                ) : (
-                    <Button variant="secondary" onClick={() => signIn('spotify', {callbackUrl: "/aura"})}>Login</Button>
-                )   
-            }    
+                )}
             </header>
         )
 
