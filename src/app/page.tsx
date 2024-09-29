@@ -1,13 +1,19 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, useMotionValue, useTransform } from "framer-motion"
 import AuraBackground from "@/components/AuraBackground";
 import chroma from "chroma-js";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
+import AuraPointer from "@/components/AuraPointer";
+import AuraButton from "@/components/AuraButton";
+
+
+
 
 function Home() {
+  const stickyElement = useRef(null)
   const heading = "Get your Aura based on your Spotify activity".split(" ")
   const [colors, setColors] = useState<string[]>([]);
 
@@ -18,6 +24,7 @@ function Home() {
 
   return (
     <>
+      <AuraPointer colors={colors} stickyElement={stickyElement}></AuraPointer>
       <AuraBackground colors={colors}/>
       <section className="h-full flex flex-col justify-center items-center relative z-20 gap-8">
         <div className="text-center w-2/3">
@@ -38,7 +45,7 @@ function Home() {
             ))}
           </div>
         </div>
-        <Button variant="secondary" onClick={() => signIn('spotify', {callbackUrl: "/aura"})} className="mt-4">Discover your Aura</Button>
+        <AuraButton ref={stickyElement}>Discover your Aura</AuraButton>
       </section>
     </>
   );
