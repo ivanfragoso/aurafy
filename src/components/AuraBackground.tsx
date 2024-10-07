@@ -1,6 +1,7 @@
 import chroma from "chroma-js";
 import { animate, motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { useEffect } from "react";
+import Particles from "./ui/particles";
 
 export interface AuraBackgroundProps {
     colors: string[];
@@ -23,19 +24,27 @@ export default function AuraBackground({ color, colors }: AuraBackgroundProps) {
     }, [colors, motionColor])
 
     return (
-        <motion.div
-            className="w-full h-full absolute"
-            style={{
-                backgroundImage: backgroundImage,
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{
-                duration: 3,
-                ease: "easeInOut",
-                repeat: Infinity,
-                repeatType: "loop",
-            }}
-        />
+        <>
+            <motion.div
+                className="w-full h-full absolute"
+                style={{
+                    backgroundImage: backgroundImage,
+                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{
+                    duration: 3,
+                    ease: "easeInOut",
+                    repeat: Infinity,
+                    repeatType: "loop",
+                }}
+            />
+            <Particles
+                className="absolute inset-0"
+                quantity={75}
+                color={"#ffffff"}
+                refresh
+            />
+        </>
     );
 }
