@@ -1,4 +1,3 @@
-import { CheckIcon } from "@radix-ui/react-icons" 
 import { cn } from "@/lib/utils"
 import {
   Card,
@@ -9,7 +8,7 @@ import {
 import { motion } from "framer-motion"
 
 interface AuraCardProps {
-    title: string,
+    title: string
     description: string
     btnClick: () => void
 }
@@ -21,13 +20,10 @@ export default function AuraCard({ title, description, btnClick }: AuraCardProps
       <MotionCard
         className={cn("w-full md:w-[380px] cursor-pointer z-10")}
         whileHover={{
-          scale: 1.05,
-          transition: { duration: .2 },
+          scale: [1, 1.04, 1],
+          transition: { duration: 0.75, repeat: Infinity }
         }}
-        whileTap={{ 
-          scale: 0.8 ,
-          transition: { duration: 1 },
-        }}
+        animate={{ scale: 1 }}
         onClick={() => btnClick()}
         >
         <CardHeader>
