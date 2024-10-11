@@ -12,22 +12,28 @@ export async function GET(req: Request) {
         const res = await axios.get(`https://api.spotify.com/v1/me/top/${type}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
+            },
+            params: {
+                limit: 50
             }
         });
 
         const items = res.data.items;
         const colors = [];
+        const names = [];
 
         for (const item of items) {
             const imageUrl = (type == 'artists') ? item.images[0].url : item.album.images[0].url;
+            const name = item.name;
             const dominantColor = await getMostVibrantColor(imageUrl);
 
             colors.push(dominantColor)
+            names.push(name)
         }
 
         const mixedColors = mixColors(colors)
 
-        return NextResponse.json({'aura': mixedColors})
+        return NextResponse.json({'aura': mixedColors, names: names});
     } catch (err) {
         console.log(err);
         return NextResponse.json({ error: 'An error occurred' });
