@@ -9,7 +9,6 @@ import BlurFade from "@/components/ui/blur-fade";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 
 function Home() {
-  const stickyElement = useRef(null)
   const heading = "Get your Aura based on your Spotify activity".split(" ")
   const [colors, setColors] = useState<string[]>([]);
 
