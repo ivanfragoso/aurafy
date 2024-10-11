@@ -7,6 +7,8 @@ import axios from "axios";
 import AuraCard from "@/components/AuraCard";
 import FloatingText from "@/components/FloatingText";
 import AuraBackground from "@/components/AuraBackground";
+import AuraPointer from "@/components/AuraPointer";
+import { cn } from "@/lib/utils";
 
 export default function Aura() {
     const [type, setType] = useState('')
@@ -75,45 +77,47 @@ export default function Aura() {
     ];
 
     return (
-        <section className="h-full" style={{backgroundColor: "#0a0a0a"}}>
+        <section className={cn("h-full", { "cursor-none": aura })} style={{backgroundColor: "#0a0a0a"}}>
             <AuraBackground colors={backgroundColor} color={aura}/>
 
             <AnimatePresence mode="wait">
             {aura ? (
-                <div className="flex justify-center h-full items-center">
+                <>
+                    <AuraPointer text="Get names"></AuraPointer>
+                    <div className="flex justify-center h-full items-center">
+                      {/* Glowing sphere overlay */}
+                      <motion.div
+                          className="absolute z-10"
+                          style={{
+                              backgroundImage: radialBackgroundImage,
+                              width: "375px",
+                              height: "375px",
+                              borderRadius: "50%",
+                              filter: "blur(30px)",
+                          }}
+                          initial={{ opacity: 0, scale: 0.5 }}
+                          animate={{
+                              opacity: 1,
+                              scale: [0.9, 1, 0.9],
+                          }}
+                          transition={{
+                              opacity: { duration: 1, ease: "easeInOut" },
+                              scale: { duration: 3, ease: "easeInOut", repeat: Infinity, repeatType: "loop" },
+                          }}
+                      >
+                      </motion.div>
 
-                    {/* Glowing sphere overlay */}
-                    <motion.div
-                        className="absolute z-10"
-                        style={{
-                            backgroundImage: radialBackgroundImage,
-                            width: "375px",
-                            height: "375px",
-                            borderRadius: "50%",
-                            filter: "blur(30px)",
-                        }}
-                        initial={{ opacity: 0, scale: 0.5 }}
-                        animate={{
-                            opacity: 1,
-                            scale: [0.9, 1, 0.9],
-                        }}
-                        transition={{
-                            opacity: { duration: 1, ease: "easeInOut" },
-                            scale: { duration: 3, ease: "easeInOut", repeat: Infinity, repeatType: "loop" },
-                        }}
-                    >
-                    </motion.div>
-
-                    {/*}
-                    {names.map((name, index) => {
-                        const position = {
-                        left: Math.random() * (100 - 10),
-                        top: Math.random() * (100 - 10),
-                        };
-                        return <FloatingText key={index} text={name} position={position} />;
-                    })}
-                    */}
-                </div>
+                      {/*}
+                      {names.map((name, index) => {
+                          const position = {
+                          left: Math.random() * (100 - 10),
+                          top: Math.random() * (100 - 10),
+                          };
+                          return <FloatingText key={index} text={name} position={position} />;
+                      })}
+                      */}
+                  </div>
+             </>
             ) : (
                 <motion.div 
                     key={"loading"}
