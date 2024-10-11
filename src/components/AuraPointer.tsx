@@ -1,22 +1,13 @@
-import { CodeSandboxLogoIcon } from "@radix-ui/react-icons";
-import chroma from "chroma-js";
-import { animate, motion, useMotionTemplate, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 import { useEffect, useState } from "react";
 
-export interface AuraPointerProps {
-    colors: string[];
-    color?: string | null;
-    stickyElement?: any;
+interface AuraPointerProps {
+    text?: string
+    pointerClick?: () => void
 }
-
-export default function AuraPointer({ color, colors, stickyElement }: AuraPointerProps) {
-    const auraColor = color ? color : colors[0]
-
-    const [isHovered, setIsHovered] = useState(false)
-    const motionColor = useMotionValue(auraColor)
-    const boxShadowColor = useMotionTemplate`${motionColor}  0px 0px 30px 10px`
-
-    const cursorSize = isHovered ? 64 : 32 /* w-8 */
+export default function AuraPointer({ text, pointerClick }: AuraPointerProps) {
+    const cursorSize = 96
+    const [isClicked, setIsClicked] = useState(false)
 
     const mouse = {
         x: useMotionValue(0),
@@ -29,52 +20,47 @@ export default function AuraPointer({ color, colors, stickyElement }: AuraPointe
         y: useSpring(mouse.y, smoothOptions)
     }
 
-    const manageMouseOver = () => {
-        stickyElement.current.style.boxShadow = `${motionColor}  0px 0px 30px 10px`
-        setIsHovered(true)
-    }
-
-    const manageMouseLeave = () => {
-        setIsHovered(false)
-    }
-
     const manageMouseMove = (e) => {
         const { clientX, clientY } = e
         mouse.x.set(clientX - cursorSize / 2)
         mouse.y.set(clientY - cursorSize / 2)
     }
 
-    useEffect(() => {
-        window.addEventListener('mousemove', manageMouseMove)
-        stickyElement.current.addEventListener("mouseover", manageMouseOver)
-        stickyElement.current.addEventListener("mouseleave", manageMouseLeave)
+    const handleMouseDown = () => {
+        setIsClicked(true)
 
-        return () => {
-            window.removeEventListener('mousemove', manageMouseMove)
-            stickyElement.current.removeEventListener("mouseover", manageMouseOver)
-            stickyElement.current.removeEventListener("mouseleave", manageMouseLeave)
+        if (pointerClick) {
+            pointerClick()
         }
-    }, []);
+    };
 
+    const handleMouseUp = () => setIsClicked(false)
+  
     useEffect(() => {
-        animate(motionColor, colors, {
-            ease: "easeInOut",
-            repeat: Infinity,
-            repeatType: "mirror",
-            duration: 20,
-        });
-    }, [colors, motionColor])
+      window.addEventListener("mousemove", manageMouseMove)
+      window.addEventListener("mousedown", handleMouseDown)
+      window.addEventListener("mouseup", handleMouseUp)
+  
+      return () => {
+        window.removeEventListener("mousemove", manageMouseMove)
+        window.removeEventListener("mousedown", handleMouseDown)
+        window.removeEventListener("mouseup", handleMouseUp)
+      };
+    }, [])
 
     return (
         <motion.div
-        className="cursor w-8 h-8 rounded-full absolute pointer-events-none bg-white z-30"
-        style={{
-          left: smoothMouse.x,
-          top: smoothMouse.y,
-          boxShadow: boxShadowColor,
-          backgroundColor: "#ededed"
-        }}
-        animate={{width: cursorSize, height: cursorSize}}
-      ></motion.div>
+            className="cursor w-24 h-24 rounded-full absolute pointer-events-none border-2 border-white z-10 p-3 flex justify-center items-center"
+            style={{
+                left: smoothMouse.x,
+                top: smoothMouse.y,
+            }}
+            animate={{
+                scale: isClicked ? 1.2 : 1,
+            }}
+            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        >
+            <span className="text-sm text-center">{text}</span>
+        </motion.div>
     );
 }
