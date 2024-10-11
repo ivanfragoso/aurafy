@@ -124,11 +124,12 @@ export default function Aura() {
                     transition={{ duration: 1 }}
                 >
                     <motion.div
-                        className="flex gap-4 justify-center items-center"
+                        className="flex flex-wrap flex-col justify-center items-center px-4 gap-2 md:flex-row md:px-0 lg:gap-4"
                         initial={{ opacity: 1 }}
                         animate={{ opacity: loading ? 0 : 1 }}
                         transition={{ duration: 0.5 }}
                     >
+                        <h1 className="w-full text-center text-5xl font-bold mb-4">Make your choice</h1>
                         {auraCards.map((auraCard, index) => (
                             <AuraCard
                                 key={index}
@@ -146,7 +147,7 @@ export default function Aura() {
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.5, duration: 1 }}
                         >
-                            <span>Fetching your aura...</span>
+                            <span className="font-bold">Fetching your aura...</span>
                         </motion.div>
                     )}
                 </motion.div>
