@@ -6,7 +6,6 @@ import chroma from "chroma-js";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
-import AuraPointer from "@/components/AuraPointer";
 import AuraButton from "@/components/AuraButton";
 
 
@@ -24,7 +23,6 @@ function Home() {
 
   return (
     <>
-      <AuraPointer colors={colors} stickyElement={stickyElement}></AuraPointer>
       <AuraBackground colors={colors}/>
       <section className="h-full flex flex-col justify-center items-center relative z-20 gap-8">
         <div className="text-center w-2/3">
