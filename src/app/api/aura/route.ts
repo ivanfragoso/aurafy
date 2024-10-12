@@ -14,7 +14,7 @@ export async function GET(req: Request) {
                 'Authorization': `Bearer ${accessToken}`
             },
             params: {
-                limit: 50
+                limit: 30
             }
         });
 

@@ -5,10 +5,12 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useMotionTemplate } from "framer-motion";
 import axios from "axios";
 import AuraCard from "@/components/AuraCard";
-import FloatingText from "@/components/FloatingText";
 import AuraBackground from "@/components/AuraBackground";
 import AuraPointer from "@/components/AuraPointer";
 import { cn } from "@/lib/utils";
+import OrbitingCircles from "@/components/ui/orbiting-circles";
+import AuraSphere from "@/components/AuraSphere";
+import { useMediaQuery } from 'react-responsive';
 
 export default function Aura() {
     const [type, setType] = useState('')
@@ -17,8 +19,11 @@ export default function Aura() {
     const [gradientColors, setGradientColors] = useState<string[]>([])
     const [backgroundColor, setBackgroundColor] = useState<string[]>([])
     const [loading, setLoading] = useState(false)
-
-    const radialBackgroundImage = useMotionTemplate`radial-gradient(circle, ${gradientColors[0]} 10%, ${gradientColors[1]} 40%, ${gradientColors[2]} 70%)`
+    const [showNames, setShowNames] = useState(false)
+    const isMobile = useMediaQuery({ maxWidth: 767 });
+    const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1024 });
+    const isLaptop = useMediaQuery({ minWidth: 1024, maxWidth: 1280 });
+    const isDesktop = useMediaQuery({ minWidth: 1280 });
 
     const getAura = async (type: string) => {
         try {
@@ -82,44 +87,45 @@ export default function Aura() {
 
             <AnimatePresence mode="wait">
             {aura ? (
-                <>
-                    <AuraPointer text="Get names"></AuraPointer>
-                    <div className="flex justify-center h-full items-center">
-                      {/* Glowing sphere overlay */}
-                      <motion.div
-                          className="absolute z-10"
-                          style={{
-                              backgroundImage: radialBackgroundImage,
-                              width: "375px",
-                              height: "375px",
-                              borderRadius: "50%",
-                              filter: "blur(30px)",
-                          }}
-                          initial={{ opacity: 0, scale: 0.5 }}
-                          animate={{
-                              opacity: 1,
-                              scale: [0.9, 1, 0.9],
-                          }}
-                          transition={{
-                              opacity: { duration: 1, ease: "easeInOut" },
-                              scale: { duration: 3, ease: "easeInOut", repeat: Infinity, repeatType: "loop" },
-                          }}
-                      >
-                      </motion.div>
+                <article className="flex justify-center h-full items-center">
+                    {isLaptop || isDesktop && <AuraPointer text={showNames ? "Hide names" : "Show names"} pointerClick={() => setShowNames((prev) => !prev)}></AuraPointer>}
+                    <AuraSphere gradientColors={gradientColors}></AuraSphere>
 
-                      {/*}
-                      {names.map((name, index) => {
-                          const position = {
-                          left: Math.random() * (100 - 10),
-                          top: Math.random() * (100 - 10),
-                          };
-                          return <FloatingText key={index} text={name} position={position} />;
-                      })}
-                      */}
-                  </div>
-             </>
+                    <motion.div
+                        className="flex justify-center h-full w-full items-center overflow-hidden"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: showNames ? 1 : 0 }}
+                        transition={{ duration: 0.5 }}>
+                        {names.map((name, index) => {
+                            const delay = index * 2
+                            const radius = () => {
+                                if (isMobile) {
+                                    return index <= 9 ? 100 : index <= 19 ? 140 : 180;
+                                } else if (isTablet) {
+                                    return index <= 9 ? 150 : index <= 19 ? 200 : 250;
+                                } else if (isLaptop) {
+                                    return index <= 9 ? 200 : index <= 19 ? 250 : 300;
+                                } else if (isDesktop) {
+                                    console.log("entro")
+                                    return index <= 9 ? 200 : index <= 19 ? 275 : 350;
+                                }
+                            };                        
+                            
+                            return <OrbitingCircles
+                                    key={index}
+                                    className=" border-none bg-transparent h-auto w-auto text-xs md:text-sm lg:text-base"
+                                    radius={radius()}
+                                    duration={20}
+                                    delay={delay}
+                                    reverse
+                                >
+                                    <span>{name}</span>
+                                </OrbitingCircles>
+                        })}
+                    </motion.div>
+                </article>
             ) : (
-                <motion.div 
+                <motion.section
                     key={"loading"}
                     className="h-full flex justify-center items-center"
                     initial={{ opacity: 0 }}
@@ -128,12 +134,12 @@ export default function Aura() {
                     transition={{ duration: 1 }}
                 >
                     <motion.div
-                        className="flex flex-wrap flex-col justify-center items-center px-4 gap-2 md:flex-row md:px-0 lg:gap-4"
+                        className="flex flex-wrap flex-col justify-center items-center px-4 gap-2 md:flex-row lg:px-0 lg:gap-4"
                         initial={{ opacity: 1 }}
                         animate={{ opacity: loading ? 0 : 1 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <h1 className="w-full text-center text-5xl font-bold mb-4">Make your choice</h1>
+                        <h1 className="w-full text-center font-bold mb-4 text-4xl lg:text-5xl">Make your choice</h1>
                         {auraCards.map((auraCard, index) => (
                             <AuraCard
                                 key={index}
@@ -154,7 +160,7 @@ export default function Aura() {
                             <span className="font-bold">Fetching your aura...</span>
                         </motion.div>
                     )}
-                </motion.div>
+                </motion.section>
             )}
 
             </AnimatePresence>

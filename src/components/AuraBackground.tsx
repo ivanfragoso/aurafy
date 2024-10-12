@@ -41,7 +41,6 @@ export default function AuraBackground({ color, colors }: AuraBackgroundProps) {
             />
             <Particles
                 className="absolute inset-0"
-                quantity={75}
                 color={"#ffffff"}
                 refresh
             />
