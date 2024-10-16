@@ -27,7 +27,7 @@ export default function Header() {
                 { session && (
                     <>
                         {session.user?.name}
-                        <Button variant="secondary" onClick={() => signOut()}>Logout</Button>
+                        <Button variant="secondary" size="sm" onClick={() => signOut()}>Logout</Button>
                     </>
                 )}
             </header>
