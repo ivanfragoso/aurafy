@@ -1,8 +1,8 @@
 "use client";
 
 import chroma from "chroma-js";
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useMotionTemplate } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import axios from "axios";
 import AuraCard from "@/components/AuraCard";
 import AuraBackground from "@/components/AuraBackground";
@@ -11,19 +11,42 @@ import { cn } from "@/lib/utils";
 import OrbitingCircles from "@/components/ui/orbiting-circles";
 import AuraSphere from "@/components/AuraSphere";
 import { useMediaQuery } from 'react-responsive';
+import { Lora } from 'next/font/google';
+import { ArrowLeftIcon,EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
+
+
+const lora = Lora({ subsets: ['latin'] })
 
 export default function Aura() {
-    const [type, setType] = useState('')
-    const [aura, setAura] = useState('')
+    const [type, setType] = useState<string>('')
+    const [aura, setAura] = useState<string>('');
     const [names, setNames] = useState<string[]>([])
-    const [gradientColors, setGradientColors] = useState<string[]>([])
-    const [backgroundColor, setBackgroundColor] = useState<string[]>([])
-    const [loading, setLoading] = useState(false)
-    const [showNames, setShowNames] = useState(false)
+    const [randomColors, setRandomColors] = useState<string[]>([]);
+    const [loading, setLoading] = useState<boolean>(false)
+    const [showNames, setShowNames] = useState<boolean>(false)
+    const [quote, setQuote] = useState<{ quoteText: string, quoteAuthor: string }>({quoteText: '', quoteAuthor: ''})
     const isMobile = useMediaQuery({ maxWidth: 767 });
     const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1024 });
-    const isLaptop = useMediaQuery({ minWidth: 1024, maxWidth: 1280 });
-    const isDesktop = useMediaQuery({ minWidth: 1280 });
+    const isDesktop = useMediaQuery({ minWidth: 1024 });
+
+    useEffect(() => {
+        const generatedColors = Array.from({ length: 20 }, () => chroma.random().hex());
+        setRandomColors(generatedColors);
+    }, []);
+
+    // Memoize gradient colors
+    const gradientColors = useMemo(() => {
+        if (aura) {
+            return [
+                chroma(aura).brighten(1).hex(),
+                chroma(aura).saturate(1).hex(),
+                chroma(aura).darken(1).hex(),
+                aura,
+            ];
+        }
+
+        return randomColors;
+    }, [aura, randomColors]);
 
     const getAura = async (type: string) => {
         try {
@@ -45,28 +68,41 @@ export default function Aura() {
         }
     };
 
-    useEffect(() => {
-        const generatedColors = Array.from({ length: 20 }, () => chroma.random().hex());
-        setBackgroundColor(generatedColors);
-    }, []);
+    const getQuote = async () => {
+        try {
+            const result = await axios.get('/api/quote');
+            if (result.status === 200) {
+                setQuote(result.data);
+            } else {
+                console.error("Error getting quote");
+            }
+        } catch (error) {
+            console.error("Error getting quote", error); // TODO: ui friendly error
+        }
+    };
 
     useEffect(() => {
-        (type) && getAura(type)
+        if (type) {
+            getAura(type);
+            getQuote();
+        } else {
+            setAura('')
+        }
     }, [type]);
 
-    useEffect(() => {
-        if (aura) {
-            const colorVariations = [
-                chroma(aura).brighten(1).hex(),
-                chroma(aura).saturate(1).hex(),
-                chroma(aura).darken(1).hex(),
-                aura,
-            ];
-
-            setGradientColors(colorVariations)
-            setBackgroundColor([aura])
-        }
-    }, [aura]);
+    const randomQuote = () => {
+        return (
+            <motion.div 
+                className="absolute flex flex-col items-center top-48 lg:top-36 xl:top-58 z-40 px-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: showNames ? 0 : 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                <h2 className={`${lora.className} text-lg text-center md:text-2xl font-bold opacity-90`}>"{quote.quoteText}"</h2>
+                <span className={`${lora.className} text-sm md:text-lg !italic opacity-90`}>{quote.quoteAuthor}</span>
+            </motion.div>
+        );
+    };
 
     const auraCards = [
         {
@@ -82,48 +118,58 @@ export default function Aura() {
     ];
 
     return (
-        <section className={cn("h-full", { "cursor-none": aura })} style={{backgroundColor: "#0a0a0a"}}>
-            <AuraBackground colors={backgroundColor} color={aura}/>
+        <section className={cn("h-full", { "cursor-normal": aura })} style={{backgroundColor: "#0a0a0a"}}>
+            <AuraBackground colors={gradientColors} color={aura}/>
 
             <AnimatePresence mode="wait">
             {aura ? (
-                <article className="flex justify-center h-full items-center">
-                    {isLaptop || isDesktop && <AuraPointer text={showNames ? "Hide names" : "Show names"} pointerClick={() => setShowNames((prev) => !prev)}></AuraPointer>}
-                    <AuraSphere gradientColors={gradientColors}></AuraSphere>
-
-                    <motion.div
-                        className="flex justify-center h-full w-full items-center overflow-hidden"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: showNames ? 1 : 0 }}
-                        transition={{ duration: 0.5 }}>
-                        {names.map((name, index) => {
-                            const delay = index * 2
-                            const radius = () => {
-                                if (isMobile) {
-                                    return index <= 9 ? 100 : index <= 19 ? 140 : 180;
-                                } else if (isTablet) {
-                                    return index <= 9 ? 150 : index <= 19 ? 200 : 250;
-                                } else if (isLaptop) {
-                                    return index <= 9 ? 200 : index <= 19 ? 250 : 300;
-                                } else if (isDesktop) {
-                                    console.log("entro")
-                                    return index <= 9 ? 200 : index <= 19 ? 275 : 350;
-                                }
-                            };                        
-                            
-                            return <OrbitingCircles
-                                    key={index}
-                                    className=" border-none bg-transparent h-auto w-auto text-xs md:text-sm lg:text-base"
-                                    radius={radius()}
-                                    duration={20}
-                                    delay={delay}
-                                    reverse
-                                >
-                                    <span>{name}</span>
-                                </OrbitingCircles>
-                        })}
-                    </motion.div>
-                </article>
+                <motion.section 
+                    key={"back"}
+                    className="h-full flex justify-center items-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 1 }}
+                >
+                    <article className="flex flex-col justify-center h-full items-center">
+                        {/* {isDesktop && <AuraPointer text={showNames ? "Hide names" : "Show names"} pointerClick={() => setShowNames((prev) => !prev)}></AuraPointer>*/}
+                        {quote && randomQuote()}
+                        <AuraSphere gradientColors={gradientColors} />
+                        <motion.div
+                            className="absolute flex justify-center h-full w-full items-center overflow-hidden"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: showNames ? 1 : 0 }}
+                            transition={{ duration: 0.5 }}>
+                            {names.map((name, index) => {
+                                const delay = index * 2
+                                const radius = () => {
+                                    if (isMobile) {
+                                        return index <= 9 ? 100 : index <= 19 ? 140 : 180;
+                                    } else if (isTablet) {
+                                        return index <= 9 ? 150 : index <= 19 ? 200 : 250;
+                                    } else if (isDesktop) {
+                                        return index <= 9 ? 200 : index <= 19 ? 250 : 300;
+                                    }
+                                };                        
+                                
+                                return <OrbitingCircles
+                                        key={index}
+                                        className=" border-none bg-transparent h-auto w-auto text-xs md:text-sm"
+                                        radius={radius()}
+                                        duration={20}
+                                        delay={delay}
+                                        reverse
+                                    >
+                                        <span>{name}</span>
+                                    </OrbitingCircles>
+                            })}
+                        </motion.div>
+                    </article>
+                    <nav className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex gap-2 cursor-pointer p-2 shadow bg-black rounded-full">
+                        {showNames ? <EyeOpenIcon width={20} height={20} onClick={() => setShowNames(false)}></EyeOpenIcon> : <EyeClosedIcon width={20} height={20} onClick={() => setShowNames(true)}></EyeClosedIcon>}
+                        <ArrowLeftIcon onClick={() => setType('')} width={20} height={20}></ArrowLeftIcon>
+                    </nav>
+                </motion.section>
             ) : (
                 <motion.section
                     key={"loading"}
@@ -139,7 +185,7 @@ export default function Aura() {
                         animate={{ opacity: loading ? 0 : 1 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <h1 className="w-full text-center font-bold mb-4 text-4xl lg:text-5xl">Make your choice</h1>
+                        <h1 className="w-full text-center font-bold mb-2 text-3xl">Make your choice</h1>
                         {auraCards.map((auraCard, index) => (
                             <AuraCard
                                 key={index}

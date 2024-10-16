@@ -9,7 +9,7 @@ export default function AuraSphere({gradientColors}: AuraSphereProps) {
 
     return (
         <motion.div
-            className="absolute z-10 w-[200px] h-[200px] md:w-[270px] md:h-[270px] lg:w-[375px] lg:h-[375px]"
+            className="z-10 w-[200px] h-[200px] md:w-[270px] md:h-[270px] lg:w-[375px] lg:h-[375px]"
             style={{
                 backgroundImage: radialBackgroundImage,
                 borderRadius: "50%",
