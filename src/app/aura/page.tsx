@@ -93,7 +93,7 @@ export default function Aura() {
     const randomQuote = () => {
         return (
             <motion.div 
-                className="absolute flex flex-col items-center top-48 lg:top-36 xl:top-58 z-40 px-4 lg:px-0 container"
+                className="absolute flex flex-col items-center top-48 lg:top-36 xl:top-58 z-40 px-4 lg:px-4 container"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: showNames ? 0 : 1 }}
                 transition={{ duration: 0.5 }}
@@ -134,7 +134,7 @@ export default function Aura() {
                     <article className="flex flex-col justify-center h-full items-center">
                         {/* {isDesktop && <AuraPointer text={showNames ? "Hide names" : "Show names"} pointerClick={() => setShowNames((prev) => !prev)}></AuraPointer>*/}
                         {quote && randomQuote()}
-                        <AuraSphere gradientColors={gradientColors} />
+                        <AuraSphere gradientColors={gradientColors} btnClick={() => (setShowNames((prev) => !prev))}/>
                         <motion.div
                             className="absolute flex justify-center h-full w-full items-center overflow-hidden"
                             initial={{ opacity: 0 }}
@@ -165,10 +165,6 @@ export default function Aura() {
                             })}
                         </motion.div>
                     </article>
-                    <nav className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex gap-2 cursor-pointer p-2 shadow bg-black rounded-full">
-                        {showNames ? <EyeOpenIcon width={20} height={20} onClick={() => setShowNames(false)}></EyeOpenIcon> : <EyeClosedIcon width={20} height={20} onClick={() => setShowNames(true)}></EyeClosedIcon>}
-                        <ArrowLeftIcon onClick={() => setType('')} width={20} height={20}></ArrowLeftIcon>
-                    </nav>
                 </motion.section>
             ) : (
                 <motion.section
