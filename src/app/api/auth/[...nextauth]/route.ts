@@ -21,6 +21,7 @@ const handler = NextAuth({
         async jwt({ token, user, account }) {
             if (account && user) {
                 return {
+                    user: user,
                     accessToken: account.access_token,
                     accessTokenExpires: account.expires_at * 1000,
                     refreshToken: account.refresh_token
@@ -62,7 +63,6 @@ async function refreshAccessToken(token) {
         });
 
         const refreshedTokens = response.data;
-        console.log('Refreshed Tokens:', refreshedTokens);
 
         return {
             ...token,
