@@ -93,12 +93,12 @@ export default function Aura() {
     const randomQuote = () => {
         return (
             <motion.div 
-                className="absolute flex flex-col items-center top-48 lg:top-36 xl:top-58 z-40 px-4"
+                className="absolute flex flex-col items-center top-48 lg:top-36 xl:top-58 z-40 px-4 lg:px-0 container"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: showNames ? 0 : 1 }}
                 transition={{ duration: 0.5 }}
             >
-                <h2 className={`${lora.className} text-lg text-center md:text-2xl font-bold opacity-90`}>"{quote.quoteText}"</h2>
+                <h2 className={`${lora.className} text-md text-center md:text-2xl font-bold opacity-90`}>"{quote.quoteText}"</h2>
                 <span className={`${lora.className} text-sm md:text-lg !italic opacity-90`}>{quote.quoteAuthor}</span>
             </motion.div>
         );
