@@ -6,13 +6,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import axios from "axios";
 import AuraCard from "@/components/AuraCard";
 import AuraBackground from "@/components/AuraBackground";
-import AuraPointer from "@/components/AuraPointer";
 import { cn } from "@/lib/utils";
 import OrbitingCircles from "@/components/ui/orbiting-circles";
 import AuraSphere from "@/components/AuraSphere";
 import { useMediaQuery } from 'react-responsive';
 import { Lora } from 'next/font/google';
-import { ArrowLeftIcon,EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 
 
 const lora = Lora({ subsets: ['latin'] })
@@ -53,7 +51,7 @@ export default function Aura() {
             setLoading(true)
             const result = await axios.get('/api/aura', {
                 params: { type }
-            });
+            })
 
             if (result.status === 200) {
                 setAura(result.data.aura);
@@ -181,7 +179,7 @@ export default function Aura() {
                         animate={{ opacity: loading ? 0 : 1 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <h1 className="w-full text-center font-bold mb-2 text-3xl">Make your choice</h1>
+                        <h1 className="w-full text-center font-bold mb-2 text-2xl lg:text-3xl">Make your choice</h1>
                         {auraCards.map((auraCard, index) => (
                             <AuraCard
                                 key={index}
@@ -194,12 +192,21 @@ export default function Aura() {
 
                     {loading && (
                         <motion.div
-                            className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-xl z-10"
+                            className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white font-bold text-lg z-10"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.5, duration: 1 }}
                         >
-                            <span className="font-bold">Fetching your aura...</span>
+                            <motion.span
+                                animate={{
+                                    opacity: [0, 1, 0],
+                                }}
+                                transition={{
+                                    opacity: { duration: 1.5, ease: "easeInOut", repeat: Infinity, repeatType: "loop" }
+                                }}
+                            >
+                                Fetching your aura...
+                            </motion.span>
                         </motion.div>
                     )}
                 </motion.section>
