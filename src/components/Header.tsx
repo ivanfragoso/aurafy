@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react"
 import { signOut } from "next-auth/react"
 import { Button } from "./ui/button"
 import { useRouter } from "next/navigation"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import SparklesText from "./ui/sparkles-text"
 import chroma from "chroma-js"
 import { useEffect, useState } from "react"
@@ -25,10 +26,13 @@ export default function Header() {
                 <SparklesText className="text-2xl cursor-pointer" onClick={() => router.push("/")} text="aurafy" sparklesCount={5} colors={colors}></SparklesText>
 
                 { session && (
-                    <>
-                        {session.user?.name}
+                    <div className="flex gap-2">
+                        <Avatar>
+                            <AvatarImage src={session.user?.image} />
+                            <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
                         <Button variant="secondary" size="sm" onClick={() => signOut()}>Logout</Button>
-                    </>
+                    </div>
                 )}
             </header>
         )
