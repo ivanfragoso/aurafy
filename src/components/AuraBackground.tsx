@@ -8,27 +8,33 @@ export interface AuraBackgroundProps {
 }
 
 export default function AuraBackground({ color, colors }: AuraBackgroundProps) {
-    const auraColor = color ? color : colors[0]
-
-    const motionColor = useMotionValue(auraColor)
-    const backgroundImage = useMotionTemplate`radial-gradient(150% 175% at 50% 0%, #0a0a0a 50%, ${motionColor})`
+    const motionColor = useMotionValue(colors[0]);
+    const backgroundImage = useMotionTemplate`radial-gradient(150% 175% at 50% 0%, #0a0a0a 50%, ${motionColor})`;
 
     useEffect(() => {
-        animate(motionColor, colors, {
+        animate(motionColor, color || colors[0], {
             ease: "easeInOut",
-            repeat: Infinity,
-            repeatType: "mirror",
-            duration: 20,
+            duration: 2,
         });
-    }, [colors, motionColor])
+    }, [color, colors, motionColor]);
+
+    useEffect(() => {
+        if (!color) {
+            const animation = animate(motionColor, colors, {
+                ease: "easeInOut",
+                duration: 20,
+                repeat: Infinity,
+                repeatType: "mirror",
+            });
+            return () => animation.stop();
+        }
+    }, [colors, motionColor, color]);
 
     return (
         <>
             <motion.div
                 className="w-full h-full absolute"
-                style={{
-                    backgroundImage: backgroundImage,
-                }}
+                style={{ backgroundImage }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{
@@ -38,11 +44,7 @@ export default function AuraBackground({ color, colors }: AuraBackgroundProps) {
                     repeatType: "loop",
                 }}
             />
-            <Particles
-                className="absolute inset-0"
-                color={"#ffffff"}
-                refresh
-            />
+            <Particles className="absolute inset-0" color={"#ffffff"} refresh />
         </>
     );
 }
