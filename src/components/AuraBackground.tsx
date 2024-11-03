@@ -1,4 +1,3 @@
-import chroma from "chroma-js";
 import { animate, motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { useEffect } from "react";
 import Particles from "./ui/particles";
