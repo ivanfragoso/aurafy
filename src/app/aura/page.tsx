@@ -11,6 +11,7 @@ import OrbitingCircles from "@/components/ui/orbiting-circles";
 import AuraSphere from "@/components/AuraSphere";
 import { useMediaQuery } from 'react-responsive';
 import { Lora } from 'next/font/google';
+import { Button } from "@/components/ui/button";
 
 
 const lora = Lora({ subsets: ['latin'] })
@@ -96,7 +97,7 @@ export default function Aura() {
                 animate={{ opacity: showNames ? 0 : 1 }}
                 transition={{ duration: 0.5 }}
             >
-                <h2 className={`${lora.className} text-md text-center md:text-2xl font-bold opacity-90`}>"{quote.quoteText}"</h2>
+                <h2 className={`${lora.className} text-md text-center md:text-2xl font-bold opacity-90`}>&quot;{quote.quoteText}&quot;</h2>
                 <span className={`${lora.className} text-sm md:text-lg !italic opacity-90`}>{quote.quoteAuthor}</span>
             </motion.div>
         );
@@ -116,21 +117,25 @@ export default function Aura() {
     ];
 
     return (
-        <section className={cn("h-full", { "cursor-normal": aura })} style={{backgroundColor: "#0a0a0a"}}>
+        <section className={cn("h-full overflow-hidden", { "cursor-normal": aura })} style={{backgroundColor: "#0a0a0a"}}>
+
             <AuraBackground colors={gradientColors} color={aura}/>
 
             <AnimatePresence mode="wait">
             {aura ? (
+                <>
+                <div className="p-4 container mx-auto w-full z-40 flex justify-center">
+                    <Button variant="ghost" size={"sm"} className="z-30" onClick={() => setType('')}>Go back</Button>
+                </div>
                 <motion.section 
                     key={"back"}
-                    className="h-full flex justify-center items-center"
+                    className="h-full flex justify-center items-center relative"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 1 }}
                 >
                     <article className="flex flex-col justify-center h-full items-center">
-                        {/* {isDesktop && <AuraPointer text={showNames ? "Hide names" : "Show names"} pointerClick={() => setShowNames((prev) => !prev)}></AuraPointer>*/}
                         {quote && randomQuote()}
                         <AuraSphere gradientColors={gradientColors} btnClick={() => (setShowNames((prev) => !prev))}/>
                         <motion.div
@@ -164,6 +169,8 @@ export default function Aura() {
                         </motion.div>
                     </article>
                 </motion.section>
+
+                </>
             ) : (
                 <motion.section
                     key={"loading"}
