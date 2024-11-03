@@ -23,7 +23,6 @@ export default function Aura() {
     const [loading, setLoading] = useState<boolean>(false)
     const [showNames, setShowNames] = useState<boolean>(false)
     const [quote, setQuote] = useState<{ quoteText: string, quoteAuthor: string }>({quoteText: '', quoteAuthor: ''})
-    const MotionButton = motion.create(Button)
     const isMobile = useMediaQuery({ maxWidth: 767 });
     const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1024 });
     const isDesktop = useMediaQuery({ minWidth: 1024 });
@@ -122,11 +121,18 @@ export default function Aura() {
             <AnimatePresence mode="wait">
                 {aura ? (
                     <>
-                        <div className="container w-full absolute top-0 p-4 left-1/2 transform -translate-x-1/2 flex justify-center z-30">
-                            <MotionButton animate={{ opacity: type === "" ? 0 : 1 }} transition={{ duration: 1 }} variant="ghost" size={"sm"} onClick={() => setType('')}>Go back</MotionButton>
-                        </div>
+                        <motion.div
+                            key={"return"}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 1 }} 
+                            className="container w-full absolute top-0 p-4 left-1/2 transform -translate-x-1/2 flex justify-center z-30"
+                        >
+                            <Button variant="ghost" size={"sm"} onClick={() => setType('')}>Go back</Button>
+                        </motion.div>
                         <motion.section 
-                            key={"back"}
+                            key={"aura"}
                             className="h-full flex justify-center items-center relative"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
